@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <title>2d game engine</title>
+    <meta charset="utf-8" />
+  </head>
+
+  <body onload="doGLDraw();">
+    <script src="src/WebGL.js"></script>
+
+    <script type="x-shader/x-vertex" id="VertexShader">
+      attribute vec3 aSquareVertexPosition;
+      void main(void) {
+        gl_Position = vec4(aSquareVertexPosition, 1.0);
+      }
+    </script>
+
+    <script type="x-shader/x-fragment" id="FragmentShader">
+      void main(void) {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+      }
+    </script>
+  </body>
+
+</html>
+
