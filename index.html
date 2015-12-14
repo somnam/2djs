@@ -6,9 +6,7 @@
     <meta charset="utf-8" />
   </head>
 
-  <body onload="doGLDraw();">
-    <script src="src/WebGL.js"></script>
-
+  <body>
     <script type="x-shader/x-vertex" id="VertexShader">
       attribute vec3 aSquareVertexPosition;
       void main(void) {
@@ -20,6 +18,10 @@
       void main(void) {
         gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
       }
+    </script>
+
+    <!-- Load the script "js/main.js" as our entry point -->
+    <script data-main="js/main"  src="js/node_modules/requirejs/require.js">
     </script>
   </body>
 
