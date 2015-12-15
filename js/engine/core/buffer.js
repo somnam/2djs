@@ -10,29 +10,29 @@ define(function() {
     ];
 
     // Buffer constructor function.
-    function Buffer(webgl) {
-        // Store webgl context in instance.
-        this._webgl = webgl;
+    function Buffer(gl) {
+        // Store gl context in instance.
+        this._gl = gl;
 
-        // Create a buffer on the webgl context for vertex positions.
+        // Create a buffer on the gl context for vertex positions.
         _initSquareVertexBuffer.apply(this);
     };
 
     function _initSquareVertexBuffer() {
-        // Create a buffer on the webgl context for our vertex positions.
-        this.squareVertexBuffer = this._webgl.createBuffer();
+        // Create a buffer on the gl context for our vertex positions.
+        this.squareVertexBuffer = this._gl.createBuffer();
 
         //  Activate VertexBuffer.
-        this._webgl.bindBuffer(
-            this._webgl.ARRAY_BUFFER, 
+        this._gl.bindBuffer(
+            this._gl.ARRAY_BUFFER, 
             this.squareVertexBuffer
         );
 
         // Load vertices into the buffer.
-        this._webgl.bufferData(
-            this._webgl.ARRAY_BUFFER,
+        this._gl.bufferData(
+            this._gl.ARRAY_BUFFER,
             new Float32Array(squareVertices),
-            this._webgl.STATIC_DRAW
+            this._gl.STATIC_DRAW
         );
     };
 

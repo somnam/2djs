@@ -3,7 +3,9 @@
 // Require.js allows us to configure shortcut alias
 require.config({ // {{{
     baseUrl: 'js/',
-    paths: {},
+    paths: {
+        text: 'node_modules/text/text',
+    },
 }); // }}}
 
 require([
