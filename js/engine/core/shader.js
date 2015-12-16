@@ -16,6 +16,11 @@ define([
         );
 
         _linkShaders.apply(this);
+
+        // Get a reference to the pixelColor variable in the fragment shader.
+        this._pixelColor = this._gl.getUniformLocation(
+            this.program, 'pixelColor'
+        );
     }; // }}}
 
     function _compileShader(source, shaderType) { // {{{
@@ -82,11 +87,14 @@ define([
         );
     }; // }}}
 
-    Shader.prototype.activateProgram = function() { // {{{
+    Shader.prototype.activateProgram = function(color) { // {{{
         this._gl.useProgram(this.program);
 
         // Enable the vertex position attribute.
         this._gl.enableVertexAttribArray(this.squareVertexPosition);
+
+        // Set the pixel color.
+        this._gl.uniform4fv(this._pixelColor, color);
     }; // }}}
 
     return Shader;

@@ -13,7 +13,7 @@ define([
         webgl.clear(0.0, 0.8, 0.0, 1.0);
 
         // Activate the shader program to use.
-        shader.activateProgram();
+        shader.activateProgram([0, 0, 1, 1]);
 
         // Draw with the above settings.
         webgl.GL.drawArrays(webgl.GL.TRIANGLE_STRIP, 0, 4);
