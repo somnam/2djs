@@ -2,21 +2,39 @@ define([
     'engine/core/webgl',
     'engine/core/buffer',
     'engine/core/shader',
-], function(WebGL, Buffer, Shader) {
+    'engine/renderable',
+], function(WebGL, Buffer, Shader, Renderable) {
     "use strict";
 
-    function _drawSquare(webgl, buffer, shader) { // {{{
+    function _draw(webgl, buffer, shader) { // {{{
         // Describe the characteristic of the vertex position attribute.
         shader.initSquareVertexPosition(buffer.squareVertexBuffer);
+
+        // Create renderable squares.
+        var whiteSquare = new Renderable(webgl.GL, shader),
+            redSquare   = new Renderable(webgl.GL, shader);
 
         // Clear canvas.
         webgl.clear(0.0, 0.8, 0.0, 1.0);
 
-        // Activate the shader program to use.
-        shader.activateProgram([0, 0, 1, 1]);
-
-        // Draw with the above settings.
-        webgl.GL.drawArrays(webgl.GL.TRIANGLE_STRIP, 0, 4);
+        // Draw squares.
+        // - white square
+        whiteSquare.color = [1, 1, 1, 1];
+        whiteSquare.initIdentityTransform(
+            [-0.25, 0.25, 0.0],
+            0.2,
+            [1.2, 1.2, 1.0]
+        );
+        whiteSquare.draw();
+        // - red square
+        redSquare.color = [1, 0, 0, 1];
+        redSquare.initIdentityTransform(
+            [0.25, -0.25, 0.0],
+            // Rotate the square by 45 degrees.
+            -0.785,
+            [0.4, 0.4, 1.0]
+        );
+        redSquare.draw();
     }; // }}}
 
     return {
@@ -33,7 +51,7 @@ define([
                 );
 
                 // Draw square ;).
-                _drawSquare(webgl, buffer, shader);
+                _draw(webgl, buffer, shader);
             }
         }, // }}}
     };

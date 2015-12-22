@@ -5,6 +5,7 @@ require.config({ // {{{
     baseUrl: 'js/',
     paths: {
         text: 'node_modules/text/text',
+        matrix: 'node_modules/gl-matrix/dist/gl-matrix-min',
     },
 }); // }}}
 

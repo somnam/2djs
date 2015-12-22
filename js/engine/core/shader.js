@@ -21,6 +21,11 @@ define([
         this._pixelColor = this._gl.getUniformLocation(
             this.program, 'pixelColor'
         );
+
+        // Get a reference to the vertex position transformation matrix.
+        this._modelTransform = this._gl.getUniformLocation(
+            this.program, 'modelTransform'
+        );
     }; // }}}
 
     function _compileShader(source, shaderType) { // {{{
@@ -65,7 +70,7 @@ define([
     Shader.prototype.initSquareVertexPosition = function(squareVertexBuffer) { // {{{
         // Get a reference to SquareVertexPosition
         this.squareVertexPosition = this._gl.getAttribLocation(
-            this.program, "aSquareVertexPosition"
+            this.program, "squareVertexPosition"
         );
 
         // Activate the vertex buffer.
@@ -84,6 +89,17 @@ define([
             0,
             // Offsets to the first element.
             0
+        );
+    }; // }}}
+
+    Shader.prototype.loadTransform = function(modelTransform){ // {{{
+        if (!modelTransform) return;
+
+        // Copy the transform matrix to the vertex shader location.
+        this._gl.uniformMatrix4fv(
+            this._modelTransform,
+            false,
+            modelTransform
         );
     }; // }}}
 
