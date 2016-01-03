@@ -26,6 +26,11 @@ define([
         this._modelTransform = this._gl.getUniformLocation(
             this.program, 'modelTransform'
         );
+
+        // Get a reference to the View-Projection transform operator.
+        this._viewProjectionTransform = this._gl.getUniformLocation(
+            this.program, 'viewProjectionTransform'
+        );
     }; // }}}
 
     function _compileShader(source, shaderType) { // {{{
@@ -103,8 +108,13 @@ define([
         );
     }; // }}}
 
-    Shader.prototype.activateProgram = function(color) { // {{{
+    Shader.prototype.activateProgram = function(color, viewport) { // {{{
         this._gl.useProgram(this.program);
+
+        // Pass the View-Projection matrix to the shader.
+        this._gl.uniformMatrix4fv(
+            this._viewProjectionTransform, false, viewport
+        );
 
         // Enable the vertex position attribute.
         this._gl.enableVertexAttribArray(this.squareVertexPosition);
