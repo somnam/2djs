@@ -11,15 +11,17 @@ define([
     var canvasBackground   = [0.9, 0.9, 0.9, 1.0],
         viewportBackground = [0.8, 0.8, 0.8, 1.0],
         // Coordinate values are in pixels.
-        viewportCoords     = [
+        viewportPosition   = [
             20,  // X position of the bottom-left viewport corner.
             40,  // Y position of the bottom-left viewport corner.
+        ],
+        viewportSize       = [
             600, // Width of the viewport area.
             300, // Height of the viewport area.
         ],
         // Why (20, 60) and 20? What's the refence and scale here?
-        viewportCenter     = [20, 60],
-        viewportWidth      = 20;
+        worldSpaceCenter   = [20, 60],
+        worldSpaceWidth    = 20;
 
     function _drawSquares(webgl, shader, viewport) { // {{{
         // Create renderable squares.
@@ -79,9 +81,10 @@ define([
         var viewport = camera.init({
             canvasBackground:   canvasBackground,
             viewportBackground: viewportBackground,
-            viewportCoords:     viewportCoords,
-            viewportCenter:     viewportCenter,
-            viewportWidth:      viewportWidth,
+            viewportPosition:   viewportPosition,
+            viewportSize:       viewportSize,
+            worldSpaceCenter:   worldSpaceCenter,
+            worldSpaceWidth:    worldSpaceWidth
         }).setupViewport();
 
         // Draw squares.

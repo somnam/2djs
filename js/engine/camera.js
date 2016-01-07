@@ -6,19 +6,19 @@ define(['matrix'], function(Matrix) {
             projMatrix      = Matrix.mat4.create(),
             // View-Projection matrix.
             viewportMatrix  = Matrix.mat4.create(),
-            hViewportWidth  = (0.5 * this.viewportWidth),
+            hViewportWidth  = (0.5 * this.worldSpaceWidth),
             // Width-to-height aspect ratio of the WC must match that of the
             // viewport for the squares to show up proportionally.
             hViewportHeight = (hViewportWidth *
                                // Viewport aspect ratio.
-                               (this.viewportCoords[3] / this.viewportCoords[2]));
+                               (this.viewportSize[1] / this.viewportSize[0]));
 
         // Define the view and projection matrix.
 
         // Defines the center of WC to be looked at.
         Matrix.mat4.lookAt(viewMatrix,
-            this.viewportCenter.concat(10), // Camera position.
-            this.viewportCenter.concat(0),  // Look at position.
+            this.worldSpaceCenter.concat(10), // Camera position.
+            this.worldSpaceCenter.concat(0),  // Look at position.
             [0, 1, 0]                       // Orientation.
         );
         // Defines the distance from the center position to the left and right
@@ -54,14 +54,16 @@ define(['matrix'], function(Matrix) {
     }; // }}}
 
     Camera.prototype.setupViewport = function() { // {{{
+        var viewportParams = this.viewportPosition.concat(this.viewportSize);
+
         // Set the canvas background.
         this._webgl.clear(this.canvasBackground);
 
         // Set the viewport area on canvas to be drawn.
-        this._gl.viewport.apply(this._gl, this.viewportCoords);
+        this._gl.viewport.apply(this._gl, viewportParams);
 
         // Set up the corresponding scissor area to limit clear area.
-        this._gl.scissor.apply(this._gl, this.viewportCoords);
+        this._gl.scissor.apply(this._gl, viewportParams);
 
         // Enable the scissor area.
         this._gl.enable(this._gl.SCISSOR_TEST);
