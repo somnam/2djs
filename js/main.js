@@ -13,5 +13,6 @@ require([
     // Initialize the game.
     'game',
 ], function(Game) {
-    Game.initialize();
+    var game = new Game().initialize();
+    if (game) game.start();
 });

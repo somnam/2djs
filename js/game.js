@@ -2,9 +2,11 @@ define([
     'engine/core/webgl',
     'engine/core/buffer',
     'engine/core/shader',
+    'engine/core/loop',
     'engine/renderable',
     'engine/camera',
-], function(WebGL, Buffer, Shader, Renderable, Camera) {
+    'util',
+], function(WebGL, Buffer, Shader, Loop, Renderable, Camera, Util) {
     "use strict";
 
     // World Coordinate and Viewport params.
@@ -23,90 +25,88 @@ define([
         worldSpaceCenter   = [20, 60],
         worldSpaceWidth    = 20;
 
-    function _drawSquares(webgl, shader, viewport) { // {{{
-        // Create renderable squares.
-        var blueSquare        = new Renderable(webgl.GL, shader),
-            redSquare         = new Renderable(webgl.GL, shader),
-            topLeftSquare     = new Renderable(webgl.GL, shader),
-            topRightSquare    = new Renderable(webgl.GL, shader),
-            bottomRightSquare = new Renderable(webgl.GL, shader),
-            bottomLeftSquare  = new Renderable(webgl.GL, shader);
+    var updateDelta = 0.05;
 
-        // Centre blue, slightly rotated 5x5 square.
-        blueSquare.init({
-            color:    [0.25, 0.25, 0.95, 1],
-            position: [20, 60],
-            scale:    [5, 5],
-            rotation: 0.2,
-            viewport: viewport,
-        }).draw();
+    function Game() {
+        this.webgl    = null;
+        this.buffer   = null;
+        this.shader   = null;
+        this.viewport = null;
 
-        // Centre red, 2x2 square.
-        redSquare.init({
-            color:    [1.0, 0.25, 0.25, 1.0],
-            position: [20, 60],
-            scale:    [2, 2],
-            viewport: viewport,
-        }).draw();
+        this.blueSquare = null;
+        this.redSquare  = null;
+    };
 
-        // Corner squares.
-        topLeftSquare.init({
-            color:    [0.9, 0.1, 0.1, 1],
-            position: [10, 65],
-            viewport: viewport,
-        }).draw();
-        topRightSquare.init({
-            color:    [0.1, 0.9, 0.1, 1],
-            position: [30, 65],
-            viewport: viewport,
-        }).draw();
-        bottomRightSquare.init({
-            color:    [0.1, 0.1, 0.9, 1],
-            position: [30, 55],
-            viewport: viewport,
-        }).draw();
-        bottomLeftSquare.init({
-            color:    [0.1, 0.1, 0.1, 1],
-            position: [10, 55],
-            viewport: viewport,
-        }).draw();
-    }; // }}}
+    // Inherit from Loop constructor.
+    Util.inherit(Game, Loop);
 
-    function _draw(webgl, buffer, shader) { // {{{
+    Game.prototype.initialize = function() { // {{{
+        // Skip when client doesn't support webgl.
+        if (!WebGL.isSupported()) return;
+
+        this.webgl  = new WebGL(640, 480, 'GLCanvas');
+
+        // Initialize the vertex buffer.
+        this.buffer = new Buffer(this.webgl.GL);
+
+        // Load ad compile the vertex fragment shaders.
+        this.shader = new Shader(
+            this.webgl.GL, 'VertexShader', 'FragmentShader'
+        );
+
         // Describe the characteristic of the vertex position attribute.
-        shader.initSquareVertexPosition(buffer.squareVertexBuffer);
+        this.shader.initSquareVertexPosition(this.buffer.squareVertexBuffer);
 
-        // Prepare a viewport for the World Coordinate System.
-        var camera   = new Camera(webgl);
-        var viewport = camera.init({
+        // Prepare a viewport camera for the World Coordinate System.
+        this.camera = new Camera(this.webgl).init({
             canvasBackground:   canvasBackground,
             viewportBackground: viewportBackground,
             viewportPosition:   viewportPosition,
             viewportSize:       viewportSize,
             worldSpaceCenter:   worldSpaceCenter,
             worldSpaceWidth:    worldSpaceWidth
-        }).setupViewport();
+        });
 
-        // Draw squares.
-        _drawSquares(webgl, shader, viewport);
+        // Create the renderable objects.
+
+        // Centre blue, slightly rotated 5x5 square.
+        this.blueSquare = new Renderable(this.webgl.GL, this.shader).init({
+            color:    [0.25, 0.25, 0.95, 1],
+            position: [10, 60],
+            size:     [5, 5],
+            rotation: 0.2,
+            viewport: this.camera.viewport,
+        });
+
+        // Centre red, 2x2 square.
+        this.redSquare = new Renderable(this.webgl.GL, this.shader).init({
+            color:    [1.0, 0.25, 0.25, 1.0],
+            position: [20, 60],
+            size:     [2, 2],
+            viewport: this.camera.viewport,
+        });
+
+        return this;
     }; // }}}
 
-    return {
-        initialize: function() { // {{{
-            if (WebGL.isSupported()) {
-                var webgl  = new WebGL(640, 480, 'GLCanvas');
+    Game.prototype.update = function() {
+        if (this.blueSquare.position[0] > 30) {
+            this.blueSquare.position = [10, 60];
+        }
+        this.blueSquare.increasePositionBy(updateDelta, null);
+        this.blueSquare.rotation += updateDelta;
 
-                // Initialize the vertex buffer.
-                var buffer = new Buffer(webgl.GL);
-
-                // Load ad compile the vertex fragment shaders.
-                var shader = new Shader(
-                    webgl.GL, 'VertexShader', 'FragmentShader'
-                );
-
-                // Draw square ;).
-                _draw(webgl, buffer, shader);
-            }
-        }, // }}}
+        if (this.redSquare.size[0] > 5) {
+            this.redSquare.size = [2, 2];
+        }
+        this.redSquare.increaseSizeBy(updateDelta);
     };
+
+    Game.prototype.draw = function() {
+        this.camera.setupViewport();
+        this.blueSquare.draw();
+        this.redSquare.draw();
+    };
+
+    return Game;
 });

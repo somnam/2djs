@@ -37,12 +37,26 @@ define(['matrix'], function(Matrix) {
        // operator.
        Matrix.mat4.multiply(viewportMatrix, projMatrix, viewMatrix);
 
-       return viewportMatrix;
+       this.viewport = viewportMatrix;
+
+       return;
     }; // }}}
 
     function Camera (webgl) {
         this._webgl = webgl
         this._gl    = webgl.GL;
+
+        this.canvasBackground   = null;
+        this.viewportBackground = null;
+
+        this.worldSpaceCenter = null;
+        this.worldSpaceWidth  = null;
+
+        this.viewportPosition = null;
+        this.viewportSize     = null;
+        this.viewportParams   = null;
+
+        this.viewport = null;
     };
 
     Camera.prototype.init = function(params) { // {{{
@@ -50,20 +64,28 @@ define(['matrix'], function(Matrix) {
             this[param] = params[param];
         }
 
+        // Set viewport matrix.
+        _defineCoordinateSystem.apply(this);
+
+        // Merge viewport params.
+        if (this.viewportPosition && this.viewportSize) {
+            this.viewportParams = this.viewportPosition.concat(
+                this.viewportSize
+            );
+        }
+
         return this;
     }; // }}}
 
     Camera.prototype.setupViewport = function() { // {{{
-        var viewportParams = this.viewportPosition.concat(this.viewportSize);
-
         // Set the canvas background.
         this._webgl.clear(this.canvasBackground);
 
         // Set the viewport area on canvas to be drawn.
-        this._gl.viewport.apply(this._gl, viewportParams);
+        this._gl.viewport.apply(this._gl, this.viewportParams);
 
         // Set up the corresponding scissor area to limit clear area.
-        this._gl.scissor.apply(this._gl, viewportParams);
+        this._gl.scissor.apply(this._gl, this.viewportParams);
 
         // Enable the scissor area.
         this._gl.enable(this._gl.SCISSOR_TEST);
@@ -75,8 +97,7 @@ define(['matrix'], function(Matrix) {
         // immediately after use.
         this._gl.disable(this._gl.SCISSOR_TEST);
 
-        // Define the World Coordinate System
-        return _defineCoordinateSystem.apply(this);
+        return;
     }; // }}}
 
     return Camera;

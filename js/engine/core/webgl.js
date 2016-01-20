@@ -1,11 +1,6 @@
 define(function() {
     "use strict";
 
-    function WebGL() { // {{{
-        _createCanvas.apply(this, arguments);
-        _initGL.apply(this);
-    }; // }}}
-
     function _createCanvas(width, height, id) { // {{{
         var canvas    = document.createElement('canvas');
         canvas.id     = id;
@@ -22,6 +17,11 @@ define(function() {
             this._canvas.getContext('webgl')
             || this._canvas.getContext('experimental-webgl')
         )
+    }; // }}}
+
+    function WebGL() { // {{{
+        _createCanvas.apply(this, arguments);
+        _initGL.apply(this);
     }; // }}}
 
     WebGL.isSupported = function() { // {{{

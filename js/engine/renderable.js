@@ -15,9 +15,6 @@ define([
             this[param] = params[param];
         }
 
-        // Initialize identity transform object.
-        this._transform.init(this.position, this.scale, this.rotation);
-
         return this;
     };
 
@@ -25,6 +22,8 @@ define([
         // Activate the shader program to use.
         this._shader.activateProgram(this.color, this.viewport);
 
+        // Initialize identity transform object.
+        this._transform.init(this.position, this.size, this.rotation);
         var identityTransform = this._transform.makeIdentityTransform();
 
         // Transform vertives using given matrix.
@@ -33,6 +32,18 @@ define([
         // Draw with the above settings.
         this._gl.drawArrays(this._gl.TRIANGLE_STRIP, 0, 4);
     }; // }}}
+
+    Renderable.prototype.increaseSizeBy = function(byValue) {
+        if (!byValue) return;
+
+        this.size[0] += byValue;
+        this.size[1] += byValue;
+    };
+
+    Renderable.prototype.increasePositionBy = function(posX, posY) {
+        if (posX !== null) this.position[0] += posX;
+        if (posY !== null) this.position[1] += posY;
+    };
 
     return Renderable;
 });
