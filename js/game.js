@@ -6,7 +6,8 @@ define([
     'engine/renderable',
     'engine/camera',
     'util',
-], function(WebGL, Buffer, Shader, Loop, Renderable, Camera, Util) {
+    'keyboard'
+], function(WebGL, Buffer, Shader, Loop, Renderable, Camera, Util, Keyboard) {
     "use strict";
 
     // World Coordinate and Viewport params.
@@ -26,6 +27,20 @@ define([
         worldSpaceWidth    = 20;
 
     var updateDelta = 0.05;
+
+    function _bindKeyEvents() {
+        var self = this;
+
+        Keyboard.bind('right', function() {
+            self.blueSquare.increasePositionBy(updateDelta, null);
+        });
+        Keyboard.bind('up', null, function() {
+            self.blueSquare.rotation += updateDelta;
+        });
+        Keyboard.bind('down', function() {
+            self.redSquare.increaseSizeBy(updateDelta);
+        });
+    }
 
     function Game() {
         this.webgl    = null;
@@ -86,20 +101,18 @@ define([
             viewport: this.camera.viewport,
         });
 
+        // Append key events to sqares.
+        _bindKeyEvents.apply(this);
+
         return this;
     }; // }}}
 
     Game.prototype.update = function() {
-        if (this.blueSquare.position[0] > 30) {
+        if (this.blueSquare.position[0] > 30)
             this.blueSquare.position = [10, 60];
-        }
-        this.blueSquare.increasePositionBy(updateDelta, null);
-        this.blueSquare.rotation += updateDelta;
 
-        if (this.redSquare.size[0] > 5) {
+        if (this.redSquare.size[0] > 5)
             this.redSquare.size = [2, 2];
-        }
-        this.redSquare.increaseSizeBy(updateDelta);
     };
 
     Game.prototype.draw = function() {
